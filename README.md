@@ -48,6 +48,29 @@ Running terraform apply after the first run will prompt terraform to check for a
 <img width="1154" height="154" alt="image" src="https://github.com/user-attachments/assets/5726a7ba-2b00-4391-9086-be4a2b64e15d" />
 
 ## SSH Instructions
+Now that terraform apply is done running you should see an output (that can always be printed again with **terraform output**)
+
+bastion_public_dns = "ec2-**-***-187-159.compute-1.amazonaws.com"
+bastion_public_ip = "bastion-ip"
+observer_id = "observer-instance-id"
+observer_ip = "observer-instance-ip"
+private_instance_ids = [
+  "private-instance-01",
+  "private-instance-02",
+  "private-instance-03",
+  "private-instance-04",
+  "private-instance-05",
+  "private-instance-06",
+]
+private_instance_private_ips = [
+  "PI-01-IP",
+  "PI-01-IP",
+  "PI-01-IP",
+  "PI-01-IP",
+  "PI-01-IP",
+  "PI-01-IP",
+]
+
 To ssh into bastion you must temporarily "forward" your "local ssh agent" telling it, "USE THIS KEY":
 
 **ssh-add ~/.ssh/[your ssh name (same as what you created at the beginning)]**
@@ -58,8 +81,15 @@ Now you can ssh into your bastion using the following:
 **ssh -A -i ~/.ssh/assignment08-key.pem ec2-user@<BASTION_PUBLIC_IP>**
 
 And then ssh into your ec2 instance with:
-**ssh ec2-user@<Private_IP>**
+**ssh ec2-user@<INSTANCE_IP>**
 
 For further confirmation you can check if docker is available by running **docker version** 
 
 To exit out of the ec2 instance and return to the bastion you can just hit Ctrl+D and again if you wish to exit out of the bastion.
+
+## Observer Instance
+After ssh'ing into bastion and then into your observer instance you'll want to check that docker is running images of grafana and prometheus using the command:
+**docker ps -a**
+<img width="2527" height="262" alt="image" src="https://github.com/user-attachments/assets/b40fd271-d805-482f-acf1-a2f4300cd8fe" />
+
+Once confirmed
