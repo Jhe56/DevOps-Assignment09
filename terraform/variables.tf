@@ -17,7 +17,7 @@ variable "my_ip" {
 
 variable "key_name" {
   type        = string
-  description = "assignment08-key"
+  description = "YOUR KEY PAIR-key"
 }
 
 variable "custom_ami_id" {
