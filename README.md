@@ -49,7 +49,7 @@ Running terraform apply after the first run will prompt terraform to check for a
 
 ## SSH Instructions
 Now that terraform apply is done running you should see an output (that can always be printed again with **terraform output**)
-
+```
 bastion_public_dns = "ec2-**-***-187-159.compute-1.amazonaws.com"
 bastion_public_ip = "bastion-ip"
 observer_id = "observer-instance-id"
@@ -70,7 +70,7 @@ private_instance_private_ips = [
   "PI-01-IP",
   "PI-01-IP",
 ]
-
+```
 To ssh into bastion you must temporarily "forward" your "local ssh agent" telling it, "USE THIS KEY":
 
 **ssh-add ~/.ssh/[your ssh name (same as what you created at the beginning)]**
@@ -92,4 +92,39 @@ After ssh'ing into bastion and then into your observer instance you'll want to c
 **docker ps -a**
 <img width="2527" height="262" alt="image" src="https://github.com/user-attachments/assets/b40fd271-d805-482f-acf1-a2f4300cd8fe" />
 
-Once confirmed
+Once confirmed you can step back to your local machine and run:
+```
+ssh -A -i ~/.ssh/YOUR KEY PAIR.pem \
+  -L 9090:YOUR OBSERVER IP:9090 \
+  -L 3000:YOUR OBSERVER IP:3000 \
+  ec2-user@YOUR BASTION IP
+```
+And this will use your key pair to ssh into your bastion but also link your localhost port 9090 and 3000 to your observer's ports. Following those links will bring you to prometheus (here you can check the state of your instances and check if node extrator is down for any of them):
+<img width="2450" height="836" alt="image" src="https://github.com/user-attachments/assets/3767c9c6-bc45-47ca-9cbf-ad688dc13010" />
+
+And Grafana where you can login with admin/admin (You can choose whether or not to set a more official password.): 
+<img width="2430" height="913" alt="image" src="https://github.com/user-attachments/assets/5a558f47-5187-41cc-91e8-6ad97a2eb41a" />
+
+## Prometheus and Grafana
+Then from there you can navigate through connections > datasources and select prometheus and input:
+**http:\\YOUR OBSERVER IP:9090**
+<img width="2428" height="1070" alt="image" src="https://github.com/user-attachments/assets/5d0ae024-8b7b-4507-934b-11d19a6dd29d" />
+<sub>It won't work with http:\\localhost:9090</sub>
+
+Scroll further down and hit save before you navigate to dashboard and create new visualizations of your instances' metrics
+<img width="2447" height="1231" alt="image" src="https://github.com/user-attachments/assets/b26e50e6-8590-48ee-b42b-3a00edd726b5" />
+
+You'll be redirected here where, upon clicking the blue button, you'll select prometheus (our only datasource):
+<img width="1817" height="508" alt="image" src="https://github.com/user-attachments/assets/54e41ab4-81a5-4411-8089-fa087e820249" />
+<img width="1965" height="661" alt="image" src="https://github.com/user-attachments/assets/aba9616d-328a-4784-aaa8-0a8889753681" />
+
+And then be taken to your first panel:
+<img width="2432" height="1357" alt="image" src="https://github.com/user-attachments/assets/153e8651-d44d-4e4b-afd4-d0bb4bd7bcf9" />
+
+Here you can edit how the data is displayed, and at the very bottom add or remove the metrics you want to query.
+
+For example: **CPU Utilization - node_cpu_seconds_total**
+<img width="2407" height="1028" alt="Screenshot 2026-04-01 090854" src="https://github.com/user-attachments/assets/c1c9cac9-9a22-49ee-b6eb-325f5ed41928" />
+
+And: **Memory Utilization/bytes available - node_memory_MemAvailable_bytes**
+<img width="2414" height="1028" alt="Screenshot 2026-04-01 090757" src="https://github.com/user-attachments/assets/49c46fef-2014-4b4a-905a-ffe3984e217f" />
